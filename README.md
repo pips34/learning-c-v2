@@ -70,4 +70,86 @@ out for `.` + `SHIFT + 7`, since I am using a LATAM keyboard layout.
 And using Tab completions does not really conflict with other commands, like
 `distro` or `out123` / `outpsfheader`.
 
-## 2. Empty for now
+## 2. Bits
+
+Code for this lesson (`./2/bitfields.c`):
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    unsigned char a = 0b11100110;
+    printf("%d\n", a);
+
+    signed char b = 0b11100110;
+    printf("%d\n", b);
+
+    unsigned char h = 0xE6;
+    printf("%d\n", h);
+
+    signed char g = 0xE6;
+    printf("%d\n", g);
+    return 0;
+}
+```
+
+If you compile and run it, you will find that the variable contains the same
+bytes under the hood, but since we are labeling one as `unsigned` and the other
+one as `signed`, the output of the `printf` function shows 230 for the unsigned
+one and -26 for the signed one.
+
+And we obtain the same result with hexadecimals.
+
+Standard types defined in `stdint.h`:
+
+| Type           | Type in `stdint.h` | Bytes | Signed | Min                        | Max                       |
+| -------------- | ------------------ | ----- | ------ | -------------------------- | ------------------------- |
+| char           | uint8_t            | 1     | No     | 0                          | 256                       |
+| signed char    | int8_t             | 1     | Yes    | -128                       | 127                       |
+| unsigned short | uint16_t           | 2     | No     | 0                          | 65,535                    |
+| short          | int16_t            | 2     | Yes    | -32,768                    | 32,767                    |
+| unsigned int   | uint32_t           | 4     | No     | 0                          | 4,294,967,295             |
+| int            | int32_t            | 4     | Yes    | -2,147,483,648             | 2,147,483,647             |
+| unsigned long  | uint64_t           | 8     | No     | 0                          | 4,294,967,295             |
+| long           | int64_t            | 8     | Yes    | -9,223,372,036,854,775,808 | 9,223,372,036,854,775,807 |
+
+Mysterious behavior (`./2/mystery.c`):
+
+```c
+#include <stdio.h>
+
+int main(void) {
+    unsigned int a, b;
+
+    a = 1;
+    b = 2;
+
+    printf("a-b = %d\n", a - b);
+
+    if (a - b > 0)
+        printf("a > b\n");
+    else if (a - b == 0)
+        printf("a == b\n");
+    else
+        printf("a < b\n");
+
+    return 0;
+}
+```
+
+Compile and run the code above. The output is:
+
+```
+-1
+a > b
+```
+
+Why? If these values are unsigned, why is `a - b = -1`? And if it is, then why
+is `a > b`?
+
+Well, when we have `a - b`, the result technically is `2,147,483,647`, so `a -
+b` is greater than 0, that is why `a > b` is being printed. However, when we
+use `%d` in the `printf` function, we are telling it to interpret the value as
+a signed integer, which is why we get `-1` there.
+
+## 3. Empty for now
